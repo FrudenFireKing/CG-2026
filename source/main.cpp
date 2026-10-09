@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <climits>
-
 #include <iostream>
 
 #define GLFW_INCLUDE_NONE
@@ -8,6 +7,11 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
+
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <backends/imgui_impl_vulkan.h>
 
 #include "graphics_internal.hpp"
 #include "application.hpp"
@@ -17,87 +21,101 @@ namespace {
 constexpr int32_t default_window_width = 1280;
 constexpr int32_t default_window_height = 720;
 
-constexpr char default_window_title[] = "Vulkan Starter App";
+constexpr char default_window_title[] = "lab 1 - Vulkan Graphics Application";
 
-GLFWwindow* glfw_window;
+GLFWwindow* glfw_window = nullptr;
 
 } // namespace
 
 int main() {
-	int status = EXIT_SUCCESS;
+    int status = EXIT_SUCCESS;
 
-	if (!glfwInit()) {
-		std::cerr << "Failed to initialize GLFW\n";
-		return EXIT_FAILURE;
-	}
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW\n";
+        return EXIT_FAILURE;
+    }
 
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-	glfw_window = glfwCreateWindow(default_window_width, default_window_height,
-	                               default_window_title, nullptr, nullptr);
-	if (glfw_window == nullptr) {
-		status = EXIT_FAILURE;
-		goto err_null_window;
-	}
+    glfw_window = glfwCreateWindow(default_window_width, default_window_height,
+                                   default_window_title, nullptr, nullptr);
 
-	glfwSetFramebufferSizeCallback(glfw_window, [](GLFWwindow*, int width, int height){
-		if (width == 0 || height == 0) {
-			return;
-		}
+    uint32_t extensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+    std::cout << extensionCount << " extensions supported\n";
+    
+    if (glfw_window == nullptr) {
+        status = EXIT_FAILURE;
+        goto err_null_window;
+    }
 
-		graphics::internal::resize(width, height);
-	});
+    glfwSetFramebufferSizeCallback(glfw_window, [](GLFWwindow*, int width, int height){
+        if (width == 0 || height == 0) {
+            return;
+        }
 
-	if (ImGui::CreateContext() == nullptr) {
-		std::cerr << "Failed to create ImGUI context\n";
-		status = EXIT_FAILURE;
-		goto err_imgui_init;
-	}
+        graphics::internal::resize(width, height);
+    });
 
-	if (!ImGui_ImplGlfw_InitForVulkan(glfw_window, true)) {
-		std::cerr << "Failed to initialize ImGUI GLFW backend for Vulkan renderer\n";
-		status = EXIT_FAILURE;
-		goto err_imgui_glfw_init;
-	}
+    if (ImGui::CreateContext() == nullptr) {
+        std::cerr << "Failed to create ImGUI context\n";
+        status = EXIT_FAILURE;
+        goto err_imgui_init;
+    }
 
-	if (!graphics::internal::initialize(glfw_window)) {
-		std::cerr << "Failed to initialize graphics\n";
-		status = EXIT_FAILURE;
-		goto err_graphics_init;
-	}
+    if (!ImGui_ImplGlfw_InitForVulkan(glfw_window, true)) {
+        std::cerr << "Failed to initialize ImGUI GLFW backend for Vulkan renderer\n";
+        status = EXIT_FAILURE;
+        goto err_imgui_glfw_init;
+    }
 
-	if (!application::initialize()) {
-		std::cerr << "Failed to initialize application\n";
-		status = EXIT_FAILURE;
-		goto err_application_init;
-	}
+    if (!graphics::internal::initialize(glfw_window)) {
+        std::cerr << "Failed to initialize graphics\n";
+        status = EXIT_FAILURE;
+        goto err_graphics_init;
+    }
 
-	while (!glfwWindowShouldClose(glfw_window)) {
-		const double time = glfwGetTime();
+    if (!application::initialize()) {
+        std::cerr << "Failed to initialize application\n";
+        status = EXIT_FAILURE;
+        goto err_application_init;
+    }
 
-		glfwPollEvents();
-		ImGui_ImplGlfw_NewFrame();
 
-		ImGui::NewFrame();
-		application::update(time);
-		ImGui::Render();
+    while (!glfwWindowShouldClose(glfw_window)) {
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(glfw_window, &width, &height);
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(glfw_window, &width, &height);
+            glfwWaitEvents();
+        }
 
-		graphics::internal::FrameData fd = graphics::internal::prepare();
-		application::render(fd);
-		graphics::internal::submitAndPresent();
-	}
+        const double time = glfwGetTime();
 
-	application::shutdown();
+        glfwPollEvents();
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+
+        ImGui::NewFrame();
+        application::update(time);
+        ImGui::Render();
+
+        graphics::internal::FrameData fd = graphics::internal::prepare();
+        application::render(fd);
+        graphics::internal::submitAndPresent();
+    }
+
+    application::shutdown();
 err_application_init:
-	graphics::internal::shutdown();
+    graphics::internal::shutdown();
 err_graphics_init:
-	ImGui_ImplGlfw_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
 err_imgui_glfw_init:
-	ImGui::DestroyContext();
+    ImGui::DestroyContext();
 err_imgui_init:
-	glfwDestroyWindow(glfw_window);
+    glfwDestroyWindow(glfw_window);
 err_null_window:
-	glfwTerminate();
+    glfwTerminate();
 
-	return 0;
+    return status;
 }
