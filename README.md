@@ -10,5 +10,5 @@ cmake --build build-debug --parallel
 ```
 
 <p align="center">
-  <img src="assets/demo.gif" width="700" alt="Демонстрация Лабораторной номер 1 Вариант 5 (Сфера из 100 вершин)">
+  <img src="assets/lab1.gif" width="700" alt="Демонстрация Лабораторной номер 1 Вариант 5 (Сфера из 100 вершин)">
 </p>
