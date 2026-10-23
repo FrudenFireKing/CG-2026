@@ -1,7 +1,7 @@
 #include "application.hpp"
 #include "graphics_internal.hpp"
 #include <imgui.h>
-#include <vulkan/vulkan.h>
+#include <./vulkan/vulkan.h>
 #include <vk_mem_alloc.h>
 
 #define GLM_FORCE_RADIANS

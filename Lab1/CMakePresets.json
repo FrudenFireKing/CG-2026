@@ -10,7 +10,7 @@
 		{
 			"name": "debug",
 			"inherits": "common",
-			"binaryDir": "build-debug",
+			"binaryDir": "${sourceDir}/build-mingw-debug",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug"
 			}
@@ -18,7 +18,7 @@
 		{
 			"name": "release",
 			"inherits": "common",
-			"binaryDir": "build-release",
+			"binaryDir": "${sourceDir}/build-mingw-release",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release"
 			}
