@@ -80,32 +80,45 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${imgui_SOURCE_DIR}/imgui_demo.cpp
 )
 
-# Compile shaders
-find_program(GLSLC_FOUND glslc)
-if(GLSLC_FOUND)
-	set(_SHADER_BINARIES)
+# Compile GLSL shaders to SPIR-V
+find_program(
+    GLSLC_EXECUTABLE
+    NAMES glslc glslc.exe
+    HINTS
+        "$ENV{VULKAN_SDK}/Bin"
+        "$ENV{VULKAN_SDK}/bin"
+        "F:/VulkanSDK/1.4.321.1/Bin"
+    REQUIRED
+)
 
-	macro(compile_shader SHADER_FILE)
-		set(SHADER_SOURCE ${CMAKE_SOURCE_DIR}/shaders/${SHADER_FILE})
-		set(SHADER_BINARY ${SHADER_FILE}.spv)
-		set(SHADER_BINARY_PATH ${CMAKE_SOURCE_DIR}/shaders/${SHADER_BINARY})
+set(_SHADER_BINARIES)
 
-		add_custom_command(
-			OUTPUT ${SHADER_BINARY_PATH}
-			COMMAND glslc ${SHADER_SOURCE} -o ${SHADER_BINARY_PATH}
-			DEPENDS ${SHADER_SOURCE}
-			COMMENT "Compiling ${SHADER_FILE} shader"
-		)
+macro(compile_shader SHADER_FILE)
+    set(SHADER_SOURCE
+        "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${SHADER_FILE}"
+    )
 
-		list(APPEND _SHADER_BINARIES ${SHADER_BINARY_PATH})
-	endmacro()
+    get_filename_component(SHADER_NAME "${SHADER_FILE}" NAME_WE)
 
-	# To compile shader file, use compile_shader function with a file name
-	# of a shader inside shaders directory. See example below:
+    set(SHADER_BINARY_PATH
+        "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${SHADER_NAME}.spv"
+    )
 
-	# compile_shader(example.vert)
-	# compile_shader(example.frag)
+    add_custom_command(
+        OUTPUT "${SHADER_BINARY_PATH}"
+        COMMAND "${GLSLC_EXECUTABLE}"
+                "${SHADER_SOURCE}"
+                -o "${SHADER_BINARY_PATH}"
+        DEPENDS "${SHADER_SOURCE}"
+        COMMENT "Compiling shader ${SHADER_FILE}"
+        VERBATIM
+    )
 
-	add_custom_target(shaders DEPENDS ${_SHADER_BINARIES})
-	add_dependencies(${PROJECT_NAME} shaders)
-endif()
+    list(APPEND _SHADER_BINARIES "${SHADER_BINARY_PATH}")
+endmacro()
+
+compile_shader(vert.vert)
+compile_shader(frag.frag)
+
+add_custom_target(shaders DEPENDS ${_SHADER_BINARIES})
+add_dependencies(${PROJECT_NAME} shaders)
