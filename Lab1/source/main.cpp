@@ -21,7 +21,7 @@ namespace {
 constexpr int32_t default_window_width = 1280;
 constexpr int32_t default_window_height = 720;
 
-constexpr char default_window_title[] = "lab 1 - Vulkan Graphics Application";
+constexpr char default_window_title[] = "lab 2 - Camera and Lightin";
 
 GLFWwindow* glfw_window = nullptr;
 
