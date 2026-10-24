@@ -14,3 +14,10 @@ cmake --build build-debug --parallel
 Demonstration of Laboratory Work No. 1, Option 5 (Sphere with 100 Vertices)
 
 ![Демонстрация Лабораторной номер 1 Вариант 5 (Сфера из 100 вершин)](demonstration/lab1.gif)
+
+
+## LAB 2
+[Lab 2 Report](docs/312_Горбачев_Лаб2.docx)
+
+Demonstration of Laboratory Work No. 2, Option 5 (Sphere with 100 Vertices)
+
