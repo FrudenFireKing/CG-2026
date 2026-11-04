@@ -32,6 +32,12 @@ double lastMouseY = 0.0;
 bool firstMouseEvent = true;
 bool cameraMouseControl = false;
 
+// Предыдущие обработчики мыши (установленные ImGui). ImGui_ImplGlfw_InitForVulkan
+// с install_callbacks=true ставит свои обработчики в GLFW; чтобы не потерять их,
+// наши обработчики вызывают сохранённые в конце (цепочка вызовов).
+GLFWmousebuttonfun prevMouseButtonCallback = nullptr;
+GLFWcursorposfun prevCursorPosCallback = nullptr;
+
 } // namespace
 
 int main() {
@@ -88,50 +94,52 @@ int main() {
         goto err_application_init;
     }
 
-    std::cout << "ImGui mouse input enabled: "
-          << !ImGui::GetIO().WantCaptureMouse
-          << std::endl;
-
     lastFrameTime = glfwGetTime();
 
-    glfwSetMouseButtonCallback(
+    // ВАЖНО: ImGui_ImplGlfw_InitForVulkan(..., true) уже установила свои
+    // обработчики мыши в GLFW. Вызов glfwSetMouseButtonCallback ниже
+    // перезаписывает их, поэтому сохраняем предыдущие обработчики и
+    // вызываем их из наших — иначе ImGui перестанет получать события
+    // кликов и панель станет неинтерактивной.
+    prevMouseButtonCallback = glfwSetMouseButtonCallback(
         glfw_window,
-        [](GLFWwindow* window, int button, int action, int) {
-            if (action == GLFW_PRESS) {
-                std::cout << "Mouse pressed: "
-                        << button << std::endl;
+        [](GLFWwindow* window, int button, int action, int mods) {
+            if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+                cameraMouseControl = (action == GLFW_PRESS)
+                    && !ImGui::GetIO().WantCaptureMouse;
+
+                firstMouseEvent = true;
             }
 
-            if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-                cameraMouseControl = (action == GLFW_PRESS);
-                firstMouseEvent = true;
+            if (prevMouseButtonCallback != nullptr) {
+                prevMouseButtonCallback(window, button, action, mods);
             }
         }
     );
 
-    glfwSetCursorPosCallback(
+    prevCursorPosCallback = glfwSetCursorPosCallback(
         glfw_window,
         [](GLFWwindow* window, double xpos, double ypos) {
             if (!cameraMouseControl ||
                 ImGui::GetIO().WantCaptureMouse) {
                 firstMouseEvent = true;
-                return;
-            }
-
-            if (firstMouseEvent) {
+            } else if (firstMouseEvent) {
                 lastMouseX = xpos;
                 lastMouseY = ypos;
                 firstMouseEvent = false;
-                return;
+            } else {
+                const float dx = static_cast<float>(xpos - lastMouseX);
+                const float dy = static_cast<float>(lastMouseY - ypos);
+
+                lastMouseX = xpos;
+                lastMouseY = ypos;
+
+                application::rotateCamera(dx, dy);
             }
 
-            const float dx = static_cast<float>(xpos - lastMouseX);
-            const float dy = static_cast<float>(lastMouseY - ypos);
-
-            lastMouseX = xpos;
-            lastMouseY = ypos;
-
-            application::rotateCamera(dx, dy);
+            if (prevCursorPosCallback != nullptr) {
+                prevCursorPosCallback(window, xpos, ypos);
+            }
         }
     );
 
