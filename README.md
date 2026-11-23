@@ -4,7 +4,7 @@
 To start simulation
 ```bash
 cd F:\CG\vulkan-starter-app\Lab_
- $env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+ $env:Path = "F:\msys64\ucrt64\bin;$env:Path"
 cmake --preset mingw-debug
 cmake --build build-mingw-debug --parallel
 .\build-mingw-debug\vulkan-starter-app.exe
