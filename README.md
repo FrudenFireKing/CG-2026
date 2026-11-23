@@ -31,3 +31,5 @@ Demonstration of Laboratory Work No. 3, Option 5 (Sphere with 100 Vertices)
 
 ## LAB 4
 [Lab 4 Report](docs/312_Горбачев_Лаб4.docx)
+
+<img src="demonstration/lab4.gif" width="1200">
