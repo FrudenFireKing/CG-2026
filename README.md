@@ -27,4 +27,7 @@ Demonstration of Laboratory Work No. 1, Option 5 (Sphere with 100 Vertices)
 
 Demonstration of Laboratory Work No. 3, Option 5 (Sphere with 100 Vertices)
 
-![Демонстрация Лабораторной номер 3 Вариант 5 (Сфера из 100 вершин)](demonstration/lab3.gif)
+<img src="demonstration/lab3.gif" width="1200">
+
+## LAB 4
+[Lab 4 Report](docs/312_Горбачев_Лаб4.docx)
