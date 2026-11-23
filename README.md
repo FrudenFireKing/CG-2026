@@ -25,11 +25,13 @@ Demonstration of Laboratory Work No. 1, Option 5 (Sphere with 100 Vertices)
 ## LAB 3
 [Lab 3 Report](docs/312_Горбачев_Лаб3.docx)
 
-Demonstration of Laboratory Work No. 3, Option 5 (Sphere with 100 Vertices)
+Demonstration of Laboratory Work No. 3, Option 5 (Sphere with 100 Vertices): TEXTURE MAPPING
 
 <img src="demonstration/lab3.gif" width="1200">
 
 ## LAB 4
 [Lab 4 Report](docs/312_Горбачев_Лаб4.docx)
+
+Demonstration of Laboratory Work No. 3, Option 5 (Sphere with 100 Vertices): SHADOW MAPPING
 
 <img src="demonstration/lab4.gif" width="1200">
