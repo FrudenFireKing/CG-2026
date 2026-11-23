@@ -3,9 +3,11 @@
 ---
 To start simulation
 ```bash
-cmake --preset debug
-cmake --build build-debug --parallel
-./build-debug/vulkan-starter-app
+cd F:\CG\vulkan-starter-app\Lab_
+ $env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+cmake --preset mingw-debug
+cmake --build build-mingw-debug --parallel
+.\build-mingw-debug\vulkan-starter-app.exe
 ```
 
 ## LAB 1
@@ -19,5 +21,10 @@ Demonstration of Laboratory Work No. 1, Option 5 (Sphere with 100 Vertices)
 ## LAB 2
 [Lab 2 Report](docs/312_Горбачев_Лаб2.docx)
 
-Demonstration of Laboratory Work No. 2, Option 5 (Sphere with 100 Vertices)
 
+## LAB 3
+[Lab 3 Report](docs/312_Горбачев_Лаб3.docx)
+
+Demonstration of Laboratory Work No. 3, Option 5 (Sphere with 100 Vertices)
+
+![Демонстрация Лабораторной номер 3 Вариант 5 (Сфера из 100 вершин)](demonstration/lab3.gif)
